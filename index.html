@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taxle — A daily learning challenge from IBFD</title>
+  <meta name="description" content="Taxle: Sharpen your tax knowledge, one word at a time. A daily learning challenge from IBFD." />
+  <style>
+    :root {
+      --ibfd-red: #AF0434;
+      --ibfd-red-dark: #8f032b;
+      --ibfd-black: #000000;
+      --ibfd-white: #ffffff;
+      --ibfd-paper: #f8f6f3;
+      --ibfd-soft: #f4e7ec;
+      --ibfd-border: #e8d9de;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --tile-empty: #ffffff;
+      --tile-empty-border: #cfd3d9;
+      --tile-correct: #AF0434;
+      --tile-present: #c58a00;
+      --tile-absent: #5f6977;
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, var(--ibfd-paper) 0%, #ffffff 100%);
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .app-shell {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand-stack {
+      display: flex;
+      gap: 16px;
+      align-items: centre;
+      align-items: flex-start;
+    }
+
+    .logo-wrap {
+      width: 82px;
+      min-width: 82px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: centre;
+      justify-content: flex-start;
+    }
+
+    .logo-wrap img {
+      width: 82px;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+      background: transparent;
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .title-wrap .tagline {
+      margin-top: 8px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--ibfd-black);
+    }
+
+    .title-wrap .subtitle {
+      margin-top: 4px;
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 11px 18px;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--ibfd-red);
+      color: white;
+      box-shadow: 0 6px 14px rgba(175, 4, 52, 0.18);
+    }
+
+    .btn-primary:hover { background: var(--ibfd-red-dark); }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border-color: #d6dbe2;
+    }
+
+    .btn-secondary:hover {
+      background: #f7f7f8;
+      border-color: #c3cad4;
+    }
+
+    .btn-pill.active {
+      background: var(--ibfd-black);
+      color: white;
+      border-color: var(--ibfd-black);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--ibfd-border);
+      border-radius: 28px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .card-inner {
+      padding: 18px;
+    }
+
+    .banner {
+      background: linear-gradient(135deg, var(--ibfd-black) 0%, var(--ibfd-red) 100%);
+      color: white;
+      padding: 18px 18px 14px;
+      border-radius: 28px 28px 0 0;
+    }
+
+    .banner h2 {
+      margin: 0;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+    }
+
+    .banner p {
+      margin: 8px 0 0;
+      max-width: 720px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .badge-row,
+    .control-row,
+    .stats-grid,
+    .keyboard,
+    .keyboard-row,
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.86rem;
+      border: 1px solid #e2e8f0;
+      background: white;
+      color: var(--text);
+    }
+
+    .badge.red {
+      background: var(--ibfd-red);
+      border-color: var(--ibfd-red);
+      color: white;
+    }
+
+    .badge.soft {
+      background: var(--ibfd-soft);
+      border-color: var(--ibfd-border);
+      color: var(--ibfd-red);
+      font-weight: 700;
+    }
+
+    .section-heading {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .control-block {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .control-row {
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .pill-switch {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-box {
+      border-radius: var(--radius-md);
+      border: 1px solid #e5e7eb;
+      background: #fafafa;
+      padding: 14px;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .status-box strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .grid-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 16px 0 18px;
+    }
+
+    .board {
+      display: grid;
+      gap: 8px;
+      width: min(100%, 520px);
+    }
+
+    .board-row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .tile {
+      height: 62px;
+      border-radius: 18px;
+      border: 2px solid var(--tile-empty-border);
+      background: var(--tile-empty);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      font-weight: 800;
+      font-size: 1.65rem;
+      user-select: none;
+      transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    }
+
+    .tile.pop {
+      animation: pop 0.12s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.98); }
+      100% { transform: scale(1); }
+    }
+
+    .tile.correct {
+      background: var(--tile-correct);
+      border-color: var(--tile-correct);
+      color: white;
+    }
+
+    .tile.present {
+      background: var(--tile-present);
+      border-color: var(--tile-present);
+      color: white;
+    }
+
+    .tile.absent {
+      background: var(--tile-absent);
+      border-color: var(--tile-absent);
+      color: white;
+    }
+
+    .keyboard {
+      justify-content: centre;
+      justify-content: center;
+      width: 100%;
+      display: grid;
+      gap: 8px;
+    }
+
+    .keyboard-row {
+      justify-content: center;
+    }
+
+    .key {
+      min-width: 42px;
+      height: 48px;
+      border-radius: 14px;
+      border: 1px solid #d7dce3;
+      background: #eef1f5;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 10px;
+    }
+
+    .key.wide { min-width: 76px; }
+
+    .key.correct { background: var(--tile-correct); border-color: var(--tile-correct); color: white; }
+    .key.present { background: var(--tile-present); border-color: var(--tile-present); color: white; }
+    .key.absent { background: var(--tile-absent); border-color: var(--tile-absent); color: white; }
+
+    .entry-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .entry-row input {
+      height: 50px;
+      border-radius: 16px;
+      border: 1px solid #d5dae2;
+      padding: 0 14px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .info-card .card-inner h3 {
+      margin: 0 0 10px;
+      font-size: 1.12rem;
+    }
+
+    .callout {
+      background: var(--ibfd-soft);
+      border: 1px solid var(--ibfd-border);
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 0.96rem;
+    }
+
+    .callout .category {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--ibfd-red);
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      background: var(--ibfd-paper);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .stat .kicker {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .stat .value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .explanation {
+      background: var(--ibfd-soft);
+      border: 1px solid var(--ibfd-border);
+      border-radius: 18px;
+      padding: 14px;
+      display: none;
+    }
+
+    .explanation.show { display: block; }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 0.89rem;
+    }
+
+    .centre-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .coverage-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .coverage-pill {
+      background: var(--ibfd-paper);
+      border-radius: 14px;
+      padding: 11px 12px;
+      font-size: 0.93rem;
+    }
+
+    .intro-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.58);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 40;
+    }
+
+    .intro-panel {
+      width: min(100%, 920px);
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+      border: 1px solid var(--ibfd-border);
+    }
+
+    .intro-top {
+      background: linear-gradient(135deg, var(--ibfd-black) 0%, var(--ibfd-red) 100%);
+      color: white;
+      padding: 24px;
+    }
+
+    .intro-top .intro-brand {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .intro-top img {
+      width: 88px;
+      height: auto;
+      display: block;
+      border-radius: 4px;
+      background: transparent;
+    }
+
+    .intro-top h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .intro-tagline {
+      margin-top: 8px;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .intro-subtitle {
+      margin-top: 4px;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .intro-body {
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .intro-card {
+      border: 1px solid var(--ibfd-border);
+      border-radius: 22px;
+      padding: 16px;
+      background: white;
+    }
+
+    .intro-card h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+
+    .intro-footer {
+      padding: 0 22px 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .top-bar {
+        flex-direction: column;
+      }
+
+      .intro-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 14px;
+      }
+
+      .logo-wrap,
+      .logo-wrap img {
+        width: 70px;
+      }
+
+      .tile {
+        height: 54px;
+        font-size: 1.45rem;
+      }
+
+      .key {
+        min-width: 34px;
+        height: 44px;
+        padding: 0 8px;
+        font-size: 0.86rem;
+      }
+
+      .key.wide {
+        min-width: 66px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="introOverlay" class="intro-overlay">
+    <div class="intro-panel">
+      <div class="intro-top">
+        <div class="intro-brand">
+          <img
+            src="IBFD_logo_lockup_tagline_centered_black_primary.png"
+            alt="IBFD logo"
+            onerror="this.style.display='none';"
+          />
+          <div>
+            <h2>Taxle</h2>
+            <div class="intro-tagline">Sharpen your tax knowledge, one word at a time</div>
+            <div class="intro-subtitle">A daily learning challenge from IBFD</div>
+          </div>
+        </div>
+      </div>
+      <div class="intro-body">
+        <div class="intro-card">
+          <h3>Play with purpose</h3>
+          <div class="small-note">
+            Taxle is designed as a micro-learning tool: short enough to be engaging, structured enough to support learning and development.
+          </div>
+        </div>
+        <div class="intro-card">
+          <h3>Explore key tax themes</h3>
+          <div class="small-note">
+            Word banks span corporate tax, VAT, transfer pricing, treaties, and BEPS / Pillar Two.
+          </div>
+        </div>
+        <div class="intro-card">
+          <h3>Learn after every round</h3>
+          <div class="small-note">
+            Each answer includes an internal-comms-friendly explanation so the challenge doubles as a knowledge refresher.
+          </div>
+        </div>
+      </div>
+      <div class="intro-footer">
+        <div class="small-note">Professional enough for L&amp;D, light enough to keep people coming back.</div>
+        <button id="startBtn" class="btn btn-primary">Start challenge</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <div class="top-bar">
+      <div class="brand-stack">
+        <div class="logo-wrap">
+          <img
+            src="IBFD_logo_lockup_tagline_centered_black_primary.png"
+            alt="IBFD logo"
+            onerror="this.style.display='none';"
+          />
+        </div>
+        <div class="title-wrap">
+          <h1>Taxle</h1>
+          <div class="tagline">Sharpen your tax knowledge, one word at a time</div>
+          <div class="subtitle">A daily learning challenge from IBFD</div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button id="showIntroBtn" class="btn btn-secondary">How it works</button>
+        <button id="newPracticeBtn" class="btn btn-primary">New practice round</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="card">
+        <div class="banner">
+          <div class="badge-row">
+            <span class="badge red">IBFD-style learning tool</span>
+            <span id="dailyBadge" class="badge">Daily challenge</span>
+            <span id="lengthBadge" class="badge">5 letters</span>
+            <span id="categoryBadge" class="badge">Category</span>
+          </div>
+          <h2 style="margin-top: 12px;">A daily word challenge with a learning layer</h2>
+          <p>
+            Explore tax concepts through a short Wordle-style activity that balances professional tone, light gamification, and knowledge-building.
+          </p>
+        </div>
+
+        <div class="card-inner">
+          <div class="control-block">
+            <div class="control-row">
+              <div>
+                <div class="section-heading">Mode</div>
+                <div class="pill-switch">
+                  <button id="dailyModeBtn" class="btn btn-secondary btn-pill active">Daily</button>
+                  <button id="practiceModeBtn" class="btn btn-secondary btn-pill">Practice</button>
+                </div>
+              </div>
+              <div>
+                <div class="section-heading">Hard mode</div>
+                <div class="pill-switch">
+                  <button id="hardModeBtn" class="btn btn-secondary btn-pill">Off</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="practiceLengthWrap" class="control-row hidden">
+              <div>
+                <div class="section-heading">Practice length</div>
+                <div class="pill-switch">
+                  <button data-length="5" class="btn btn-secondary btn-pill active practice-length-btn">5 letters</button>
+                  <button data-length="6" class="btn btn-secondary btn-pill practice-length-btn">6 letters</button>
+                  <button data-length="7" class="btn btn-secondary btn-pill practice-length-btn">7 letters</button>
+                </div>
+              </div>
+              <div class="small-note">
+                Harder modes use longer specialist terms for more advanced play.
+              </div>
+            </div>
+
+            <div class="status-box">
+              <strong>Status</strong>
+              <div id="statusText">Daily challenge ready.</div>
+            </div>
+          </div>
+
+          <div class="grid-wrap">
+            <div id="board" class="board" aria-label="Game board"></div>
+          </div>
+
+          <div class="keyboard" aria-label="On-screen keyboard">
+            <div id="kbdRow1" class="keyboard-row"></div>
+            <div id="kbdRow2" class="keyboard-row"></div>
+            <div id="kbdRow3" class="keyboard-row"></div>
+          </div>
+
+          <div class="entry-row">
+            <input
+              id="guessInput"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              autocapitalize="characters"
+              spellcheck="false"
+              placeholder="Type your guess"
+              aria-label="Current guess"
+            />
+            <button id="submitGuessBtn" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="card info-card">
+          <div class="card-inner">
+            <h3>Current clue</h3>
+            <div id="clueBox" class="callout"></div>
+            <div class="legend">
+              <span><i class="dot" style="background: var(--tile-correct);"></i>Correct letter, correct spot</span>
+              <span><i class="dot" style="background: var(--tile-present);"></i>Correct letter, wrong spot</span>
+              <span><i class="dot" style="background: var(--tile-absent);"></i>Letter not in the answer</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card info-card">
+          <div class="card-inner">
+            <h3>Scoreboard</h3>
+            <div class="stats-grid">
+              <div class="stat">
+                <div class="kicker">Played</div>
+                <div id="statPlayed" class="value">0</div>
+              </div>
+              <div class="stat">
+                <div class="kicker">Win rate</div>
+                <div id="statWinRate" class="value">0%</div>
+              </div>
+              <div class="stat">
+                <div class="kicker">Current streak</div>
+                <div id="statStreak" class="value">0</div>
+              </div>
+              <div class="stat">
+                <div class="kicker">Best streak</div>
+                <div id="statBestStreak" class="value">0</div>
+              </div>
+              <div class="stat" style="grid-column: 1 / -1;">
+                <div class="kicker">Round score</div>
+                <div id="statRoundScore" class="value">0</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="explanationCard" class="card info-card hidden">
+          <div class="card-inner">
+            <h3>Round explanation</h3>
+            <div id="explanationBox" class="explanation show"></div>
+            <div class="centre-row" style="margin-top: 14px;">
+              <button id="playAgainBtn" class="btn btn-primary">Play again</button>
+              <button id="goDailyBtn" class="btn btn-secondary">Go to daily</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card info-card">
+          <div class="card-inner">
+            <h3>Coverage in this demo</h3>
+            <div class="coverage-list">
+              <div class="coverage-pill">Corporate tax</div>
+              <div class="coverage-pill">VAT and indirect tax</div>
+              <div class="coverage-pill">Transfer pricing</div>
+              <div class="coverage-pill">Treaties</div>
+              <div class="coverage-pill">BEPS / Pillar Two</div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const BRAND = {
+      red: "#AF0434",
+      black: "#000000",
+    };
+
+    const CONFIG = {
+      title: "Taxle",
+      tagline: "Sharpen your tax knowledge, one word at a time",
+      subtitle: "A daily learning challenge from IBFD",
+      maxGuesses: 6,
+      logoFile: "IBFD_logo_lockup_tagline_centered_black_primary.png"
+    };
+
+    const DATA = {
+      5: [
+        { word: "AUDIT", category: "Corporate tax", clue: "A formal review of filings, records, or controls.", explanation: "An audit checks whether returns, calculations, and supporting documents are consistent with the rules and the organisation’s records." },
+        { word: "ASSET", category: "Corporate tax", clue: "Something owned that may affect depreciation, gain or loss.", explanation: "Assets matter for depreciation, capital allowances, gain calculations, and a range of corporate tax adjustments." },
+        { word: "BASIS", category: "Corporate tax", clue: "The tax starting point used to measure gain, loss or value.", explanation: "Tax basis is a core concept used when calculating gains, losses, and the tax effect of disposals or restructurings." },
+        { word: "NEXUS", category: "Treaties / Pillar Two", clue: "The connection that can give a jurisdiction the right to tax.", explanation: "Nexus helps determine whether a jurisdiction has sufficient connection to tax income, activities, or entities." },
+        { word: "INPUT", category: "VAT", clue: "Tax incurred on purchases used in the business.", explanation: "Input tax is the VAT paid on business purchases. Depending on the rules, it may be recoverable." },
+        { word: "DEBIT", category: "VAT / Accounting", clue: "An accounting entry that can affect records and reporting.", explanation: "Debits are part of the accounting trail that supports invoices, adjustments, and indirect tax reporting." },
+        { word: "CHAIN", category: "VAT", clue: "A sequence of supplies where the VAT treatment can become complex.", explanation: "Chain transactions often raise practical questions about transport, invoicing, and which supply receives a particular VAT treatment." },
+        { word: "RATES", category: "Corporate tax", clue: "Percentages applied to determine what is due.", explanation: "Rates determine how much tax is charged on income, gains, or transactions." },
+        { word: "VALUE", category: "Transfer pricing", clue: "Economic worth used in pricing or valuation questions.", explanation: "Value sits at the centre of many transfer pricing, valuation, and restructuring discussions." },
+        { word: "GROUP", category: "Corporate tax / VAT", clue: "Companies treated together for a specific tax purpose.", explanation: "A tax or VAT group can change filing, loss usage, and the treatment of intra-group transactions." },
+        { word: "BENCH", category: "Transfer pricing", clue: "Short for benchmarking against comparable outcomes.", explanation: "Benchmarking compares controlled transaction results with suitable comparable outcomes to assess arm’s length pricing." },
+        { word: "CLAIM", category: "Corporate tax", clue: "A request for a deduction, relief or credit.", explanation: "In tax, a claim may relate to reliefs, credits, deductions, or refunds, depending on the applicable rules." },
+        { word: "COURT", category: "Treaties / corporate tax", clue: "A place where disputes over interpretation may be resolved.", explanation: "Court decisions can shape tax interpretation, including treaty meaning, statutory construction, and procedural questions." },
+        { word: "LEASE", category: "Corporate tax", clue: "A contract that may have tax effects beyond accounting treatment.", explanation: "Leases can affect timing, deductibility, withholding questions, and the broader tax profile of an arrangement." },
+        { word: "MATCH", category: "Transfer pricing", clue: "Align the facts with the right comparables or method.", explanation: "A strong transfer pricing analysis depends on matching the tested transaction with the most suitable framework." },
+        { word: "TAXED", category: "Corporate tax", clue: "Subject to a tax charge.", explanation: "Whether an amount is taxed depends on the applicable rules on residence, source, exemptions, and scope." },
+        { word: "RELIE", category: "Placeholder", clue: "Unused placeholder to keep arrays flexible.", explanation: "Unused." }
+      ].filter(item => item.word.length === 5),
+
+      6: [
+        { word: "TREATY", category: "Treaties", clue: "An agreement between jurisdictions that allocates taxing rights.", explanation: "Tax treaties help reduce double taxation, allocate taxing rights, and often deal with residence, source, and withholding taxes." },
+        { word: "PILLAR", category: "BEPS / Pillar Two", clue: "Global reform term used in current international tax discussions.", explanation: "In today’s context, Pillar Two refers to global minimum tax rules designed for large multinational groups." },
+        { word: "EXPORT", category: "VAT", clue: "A cross-border supply that may receive special VAT treatment.", explanation: "Exports often receive zero-rating or exemption, but documentation and local conditions still matter." },
+        { word: "IMPORT", category: "VAT", clue: "Goods entering a jurisdiction, often triggering tax at the border.", explanation: "Imports can raise questions around import VAT, customs duties, recovery, and compliance timing." },
+        { word: "EXCISE", category: "Indirect tax", clue: "A specific levy commonly applied to selected goods.", explanation: "Excise duties often apply to products such as alcohol, tobacco, or fuel, and sit alongside VAT." },
+        { word: "METHOD", category: "Transfer pricing", clue: "The approach used to test a controlled transaction.", explanation: "Choosing the most appropriate method is central to transfer pricing analysis and documentation." },
+        { word: "RESALE", category: "Transfer pricing", clue: "A pricing method often associated with distribution activities.", explanation: "The resale price method begins with the downstream sale price and works back to an arm’s length margin." },
+        { word: "OUTPUT", category: "VAT", clue: "Tax due on sales and supplies.", explanation: "Output tax is the VAT charged on sales and is commonly offset against recoverable input tax." },
+        { word: "PROFIT", category: "Corporate tax", clue: "A common starting point for computing the tax position.", explanation: "Taxable profit often starts from accounting profit before being adjusted under tax rules." },
+        { word: "BRANCH", category: "Treaties / corporate tax", clue: "A business presence that may create local tax obligations.", explanation: "Branches can create direct tax filing obligations and may also raise treaty allocation questions." },
+        { word: "CREDIT", category: "VAT / corporate tax", clue: "A mechanism that may reduce what would otherwise be due.", explanation: "Credits can reduce net tax payable, but eligibility and timing depend on the local rules." },
+        { word: "RELIEF", category: "Corporate tax / treaties", clue: "A provision that reduces, removes, or mitigates tax.", explanation: "Relief can arise through exemptions, credits, deductions, treaty benefits, or other targeted rules." },
+        { word: "SOURCE", category: "Treaties / corporate tax", clue: "The place from which income is considered to arise.", explanation: "Source rules help determine which jurisdiction may tax a particular item of income." },
+        { word: "CHARGE", category: "VAT / corporate tax", clue: "A tax amount imposed under the relevant rules.", explanation: "A charge may refer to the assessment or imposition of tax under a particular part of the legislation." },
+        { word: "STATUS", category: "Corporate tax", clue: "A person’s or entity’s classification for a tax purpose.", explanation: "Tax status can affect residency, filing obligations, group treatment, or access to relief." }
+      ],
+
+      7: [
+        { word: "INVOICE", category: "VAT", clue: "A key document for evidence, records and recovery.", explanation: "Invoices are central to VAT compliance because they support the taxable supply and often the right to recover input tax." },
+        { word: "ROYALTY", category: "Treaties / transfer pricing", clue: "A payment type often linked to withholding questions.", explanation: "Royalties are a recurring treaty topic and are commonly analysed in transfer pricing and withholding tax work." },
+        { word: "TAXABLE", category: "Corporate tax / VAT", clue: "Within the scope of tax under the applicable rules.", explanation: "Whether something is taxable determines whether a charge arises and how it must be reported." },
+        { word: "FOREIGN", category: "Corporate tax", clue: "A cross-border element that can change the tax result.", explanation: "Foreign-source income, entities, or taxes often raise residence, source, credit, and treaty questions." },
+        { word: "MINIMUM", category: "BEPS / Pillar Two", clue: "A floor at the heart of current global tax reform.", explanation: "Global minimum taxation is intended to ensure certain multinational groups pay at least a minimum effective tax rate." },
+        { word: "MARGINS", category: "Transfer pricing", clue: "Return levels tested against comparables.", explanation: "Margins are commonly benchmarked in transfer pricing to assess whether a result is arm’s length." },
+        { word: "PAYABLE", category: "Corporate tax", clue: "An amount due that may influence timing and reporting.", explanation: "Payables can affect timing, deductibility, withholding treatment, and the practical compliance position." },
+        { word: "CREDITS", category: "Corporate tax / VAT", clue: "Offsets that may reduce the net tax position.", explanation: "Tax credits may reduce the final liability, but availability and carry-forward rules usually matter." },
+        { word: "COMPARE", category: "Transfer pricing", clue: "What you do when testing a result against benchmarks.", explanation: "Comparable analysis is one of the foundations of transfer pricing documentation and method selection." },
+        { word: "CUSTOMS", category: "Indirect tax", clue: "Border rules that can interact with VAT and trade flows.", explanation: "Customs treatment can affect valuation, duty, timing, and the wider cross-border tax position." },
+        { word: "EXEMPTS", category: "VAT", clue: "Outside normal charging in a way that may affect recovery.", explanation: "Exempt supplies may change whether a business can recover related input tax." },
+        { word: "DISPUTE", category: "Treaties / procedure", clue: "A disagreement over treatment or interpretation.", explanation: "Tax disputes can arise over valuation, interpretation, procedural questions, or treaty application." },
+        { word: "PRICING", category: "Transfer pricing", clue: "A central concept in intercompany transaction analysis.", explanation: "Transfer pricing focuses on how related-party transactions are priced and whether that pricing is arm’s length." }
+      ]
+    };
+
+    const VALID_EXTRA = {
+      5: [
+        "ALLOW","AMEND","APPEL","AVOID","BOOKS","COSTS","DEFER","ERROR","GAINS","LIMIT","LOCAL","LOSSE","MERGE",
+        "MODEL","PRIOR","RULIN","SCOPE","STAMP","STATE","TERMS","TRUST","YIELD","INPUT","CHAIN","BENCH","GROUP",
+        "BASIS","ASSET","AUDIT","RATES","DEBIT","MATCH","CLAIM","COURT","LEASE","TAXED","VALUE","NEXUS"
+      ].filter(w => w.length === 5),
+
+      6: [
+        "ADJUST","BORDER","CHARGE","DOUBLE","FILING","GLOBAL","INCOME","MASTER","OFFSET","RETURN","SCHEME",
+        "STATUS","SUPPLY","TARGET","TAXING","RELIEF","SOURCE","EXPORT","IMPORT","EXCISE","METHOD","RESALE",
+        "OUTPUT","PROFIT","BRANCH","CREDIT","PILLAR","TREATY"
+      ].filter(w => w.length === 6),
+
+      7: [
+        "BALANCE","CAPITAL","COUNTRY","CURRENT","DISCUSS","EFFECTS","EXEMPTS","FOREIGN","GROUPED","INVOICE",
+        "MARGINS","MINIMUM","PAYABLE","PRICING","ROYALTY","TAXABLE","COMPARE","CUSTOMS","DISPUTE","CREDITS"
+      ].filter(w => w.length === 7)
+    };
+
+    const KEY_ROWS = [
+      ["Q","W","E","R","T","Y","U","I","O","P"],
+      ["A","S","D","F","G","H","J","K","L"],
+      ["ENTER","Z","X","C","V","B","N","M","BACK"]
+    ];
+
+    const els = {
+      introOverlay: document.getElementById("introOverlay"),
+      startBtn: document.getElementById("startBtn"),
+      showIntroBtn: document.getElementById("showIntroBtn"),
+      newPracticeBtn: document.getElementById("newPracticeBtn"),
+      dailyModeBtn: document.getElementById("dailyModeBtn"),
+      practiceModeBtn: document.getElementById("practiceModeBtn"),
+      hardModeBtn: document.getElementById("hardModeBtn"),
+      practiceLengthWrap: document.getElementById("practiceLengthWrap"),
+      board: document.getElementById("board"),
+      clueBox: document.getElementById("clueBox"),
+      statusText: document.getElementById("statusText"),
+      guessInput: document.getElementById("guessInput"),
+      submitGuessBtn: document.getElementById("submitGuessBtn"),
+      dailyBadge: document.getElementById("dailyBadge"),
+      lengthBadge: document.getElementById("lengthBadge"),
+      categoryBadge: document.getElementById("categoryBadge"),
+      statPlayed: document.getElementById("statPlayed"),
+      statWinRate: document.getElementById("statWinRate"),
+      statStreak: document.getElementById("statStreak"),
+      statBestStreak: document.getElementById("statBestStreak"),
+      statRoundScore: document.getElementById("statRoundScore"),
+      explanationCard: document.getElementById("explanationCard"),
+      explanationBox: document.getElementById("explanationBox"),
+      playAgainBtn: document.getElementById("playAgainBtn"),
+      goDailyBtn: document.getElementById("goDailyBtn"),
+      kbdRow1: document.getElementById("kbdRow1"),
+      kbdRow2: document.getElementById("kbdRow2"),
+      kbdRow3: document.getElementById("kbdRow3"),
+      practiceLengthButtons: () => Array.from(document.querySelectorAll(".practice-length-btn"))
+    };
+
+    const STORAGE_KEYS = {
+      stats: "taxle-stats",
+      introDismissed: "taxle-intro-dismissed"
+    };
+
+    let state = {
+      mode: "daily",
+      practiceLength: 5,
+      hardMode: false,
+      seedCounter: 0,
+      currentPuzzle: null,
+      currentGuess: "",
+      guesses: [],
+      keyboardState: {},
+      gameOver: false,
+      roundScore: 0,
+      stats: loadStats()
+    };
+
+    function seedFromDate(date = new Date()) {
+      const y = date.getUTCFullYear();
+      const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const d = String(date.getUTCDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function hashString(str) {
+      let hash = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+      }
+      return Math.abs(hash >>> 0);
+    }
+
+    function loadStats() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.stats);
+        if (!raw) {
+          return { played: 0, wins: 0, streak: 0, bestStreak: 0, solvedDailyKeys: [] };
+        }
+        const parsed = JSON.parse(raw);
+        return {
+          played: parsed.played || 0,
+          wins: parsed.wins || 0,
+          streak: parsed.streak || 0,
+          bestStreak: parsed.bestStreak || 0,
+          solvedDailyKeys: Array.isArray(parsed.solvedDailyKeys) ? parsed.solvedDailyKeys : []
+        };
+      } catch {
+        return { played: 0, wins: 0, streak: 0, bestStreak: 0, solvedDailyKeys: [] };
+      }
+    }
+
+    function saveStats() {
+      localStorage.setItem(STORAGE_KEYS.stats, JSON.stringify(state.stats));
+    }
+
+    function getValidWords(length) {
+      return new Set([
+        ...DATA[length].map(item => item.word),
+        ...VALID_EXTRA[length]
+      ]);
+    }
+
+    function dailyLengthForSeed(seed) {
+      const lengths = [5, 6, 7];
+      return lengths[hashString(seed + ":length") % lengths.length];
+    }
+
+    function pickPuzzle() {
+      const todaySeed = seedFromDate();
+      const modeSeed = state.mode === "daily"
+        ? todaySeed
+        : `${todaySeed}:practice:${state.practiceLength}:${state.seedCounter}`;
+
+      const length = state.mode === "daily" ? dailyLengthForSeed(modeSeed) : state.practiceLength;
+      const bank = DATA[length];
+      const index = hashString(modeSeed + ":word") % bank.length;
+      return {
+        ...bank[index],
+        length,
+        seed: modeSeed,
+        dailyKey: `${todaySeed}:${length}`
+      };
+    }
+
+    function computeStatuses(guess, answer) {
+      const result = Array(answer.length).fill("absent");
+      const counts = {};
+
+      for (let i = 0; i < answer.length; i++) {
+        counts[answer[i]] = (counts[answer[i]] || 0) + 1;
+      }
+
+      for (let i = 0; i < guess.length; i++) {
+        if (guess[i] === answer[i]) {
+          result[i] = "correct";
+          counts[guess[i]] -= 1;
+        }
+      }
+
+      for (let i = 0; i < guess.length; i++) {
+        if (result[i] !== "correct" && counts[guess[i]] > 0) {
+          result[i] = "present";
+          counts[guess[i]] -= 1;
+        }
+      }
+
+      return result;
+    }
+
+    function computeKeyboardState() {
+      const priority = { absent: 1, present: 2, correct: 3 };
+      const result = {};
+      for (const guess of state.guesses) {
+        for (let i = 0; i < guess.word.length; i++) {
+          const char = guess.word[i];
+          const status = guess.statuses[i];
+          if (!result[char] || priority[status] > priority[result[char]]) {
+            result[char] = status;
+          }
+        }
+      }
+      state.keyboardState = result;
+    }
+
+    function getRevealedConstraints() {
+      const lockedPositions = {};
+      const mustInclude = new Set();
+
+      state.guesses.forEach(guess => {
+        guess.statuses.forEach((status, i) => {
+          if (status === "correct") {
+            lockedPositions[i] = guess.word[i];
+          }
+          if (status === "correct" || status === "present") {
+            mustInclude.add(guess.word[i]);
+          }
+        });
+      });
+
+      return { lockedPositions, mustInclude };
+    }
+
+    function computeScore(won, attempts) {
+      if (!won) return 0;
+      const base = 100;
+      const guessBonus = Math.max(0, 7 - attempts) * 15;
+      const lengthBonus = (state.currentPuzzle.length - 5) * 25;
+      const modeBonus = state.mode === "daily" ? 10 : 0;
+      const hardBonus = state.hardMode ? 30 : 0;
+      return base + guessBonus + lengthBonus + modeBonus + hardBonus;
+    }
+
+    function updateStatsUI() {
+      const { played, wins, streak, bestStreak } = state.stats;
+      const winRate = played ? Math.round((wins / played) * 100) : 0;
+
+      els.statPlayed.textContent = played;
+      els.statWinRate.textContent = `${winRate}%`;
+      els.statStreak.textContent = streak;
+      els.statBestStreak.textContent = bestStreak;
+      els.statRoundScore.textContent = state.roundScore || 0;
+    }
+
+    function setStatus(text) {
+      els.statusText.textContent = text;
+    }
+
+    function renderClue() {
+      els.clueBox.innerHTML = `
+        <div class="category">${escapeHtml(state.currentPuzzle.category)}</div>
+        <div>${escapeHtml(state.currentPuzzle.clue)}</div>
+      `;
+    }
+
+    function getRows() {
+      const rows = [];
+      const len = state.currentPuzzle.length;
+
+      for (let rowIndex = 0; rowIndex < CONFIG.maxGuesses; rowIndex++) {
+        if (rowIndex < state.guesses.length) {
+          rows.push(state.guesses[rowIndex].word.split("").map((letter, i) => ({
+            letter,
+            status: state.guesses[rowIndex].statuses[i]
+          })));
+        } else if (rowIndex === state.guesses.length && !state.gameOver) {
+          rows.push(Array.from({ length: len }, (_, i) => ({
+            letter: state.currentGuess[i] || "",
+            status: "empty"
+          })));
+        } else {
+          rows.push(Array.from({ length: len }, () => ({
+            letter: "",
+            status: "empty"
+          })));
+        }
+      }
+
+      return rows;
+    }
+
+    function renderBoard() {
+      const rows = getRows();
+      els.board.innerHTML = "";
+      els.board.style.width = state.currentPuzzle.length === 7 ? "100%" : "min(100%, 500px)";
+
+      rows.forEach((row, idx) => {
+        const rowEl = document.createElement("div");
+        rowEl.className = "board-row";
+        rowEl.style.gridTemplateColumns = `repeat(${state.currentPuzzle.length}, minmax(0, 1fr))`;
+
+        row.forEach(tile => {
+          const tileEl = document.createElement("div");
+          tileEl.className = `tile ${tile.status !== "empty" ? tile.status : ""}`;
+          tileEl.textContent = tile.letter;
+          if (tile.letter) tileEl.classList.add("pop");
+          rowEl.appendChild(tileEl);
+        });
+
+        els.board.appendChild(rowEl);
+      });
+    }
+
+    function renderKeyboard() {
+      [els.kbdRow1, els.kbdRow2, els.kbdRow3].forEach(row => row.innerHTML = "");
+      KEY_ROWS.forEach((row, rowIndex) => {
+        const target = rowIndex === 0 ? els.kbdRow1 : rowIndex === 1 ? els.kbdRow2 : els.kbdRow3;
+
+        row.forEach(key => {
+          const keyBtn = document.createElement("button");
+          keyBtn.className = "key";
+          if (key === "ENTER" || key === "BACK") keyBtn.classList.add("wide");
+          const stateClass = state.keyboardState[key];
+          if (stateClass) keyBtn.classList.add(stateClass);
+          keyBtn.textContent = key === "BACK" ? "⌫" : key;
+          keyBtn.type = "button";
+          keyBtn.addEventListener("click", () => handleKey(key));
+          target.appendChild(keyBtn);
+        });
+      });
+    }
+
+    function renderMeta() {
+      els.dailyBadge.textContent = state.mode === "daily" ? "Daily challenge" : "Practice mode";
+      els.lengthBadge.textContent = `${state.currentPuzzle.length} letters`;
+      els.categoryBadge.textContent = state.currentPuzzle.category;
+
+      els.dailyModeBtn.classList.toggle("active", state.mode === "daily");
+      els.practiceModeBtn.classList.toggle("active", state.mode === "practice");
+      els.practiceLengthWrap.classList.toggle("hidden", state.mode !== "practice");
+
+      els.practiceLengthButtons().forEach(btn => {
+        const isActive = Number(btn.dataset.length) === state.practiceLength;
+        btn.classList.toggle("active", isActive);
+      });
+
+      els.hardModeBtn.classList.toggle("active", state.hardMode);
+      els.hardModeBtn.textContent = state.hardMode ? "On" : "Off";
+      els.guessInput.placeholder = `Type a ${state.currentPuzzle.length}-letter guess`;
+      els.guessInput.maxLength = state.currentPuzzle.length;
+    }
+
+    function renderExplanation(show) {
+      if (!show) {
+        els.explanationCard.classList.add("hidden");
+        els.explanationBox.innerHTML = "";
+        return;
+      }
+
+      const p = state.currentPuzzle;
+      els.explanationBox.innerHTML = `
+        <div class="category">${escapeHtml(p.category)}</div>
+        <div style="font-size: 1.4rem; font-weight: 800; margin: 2px 0 8px;">${escapeHtml(p.word)}</div>
+        <div style="font-size: 0.98rem; color: #374151;">${escapeHtml(p.explanation)}</div>
+      `;
+      els.explanationCard.classList.remove("hidden");
+    }
+
+    function renderAll() {
+      computeKeyboardState();
+      renderMeta();
+      renderClue();
+      renderBoard();
+      renderKeyboard();
+      updateStatsUI();
+    }
+
+    function resetRound() {
+      state.currentPuzzle = pickPuzzle();
+      state.currentGuess = "";
+      state.guesses = [];
+      state.keyboardState = {};
+      state.gameOver = false;
+      state.roundScore = 0;
+      renderExplanation(false);
+      setStatus(state.mode === "daily" ? "Daily challenge ready." : "Practice round ready.");
+      renderAll();
+      focusInput();
+    }
+
+    function recordRound(won, attempts) {
+      state.roundScore = computeScore(won, attempts);
+      state.stats.played += 1;
+
+      if (won) {
+        state.stats.wins += 1;
+        state.stats.streak += 1;
+        state.stats.bestStreak = Math.max(state.stats.bestStreak, state.stats.streak);
+
+        if (state.mode === "daily") {
+          if (!state.stats.solvedDailyKeys.includes(state.currentPuzzle.dailyKey)) {
+            state.stats.solvedDailyKeys.push(state.currentPuzzle.dailyKey);
+          }
+        }
+      } else {
+        state.stats.streak = 0;
+      }
+
+      saveStats();
+      updateStatsUI();
+    }
+
+    function submitGuess() {
+      if (state.gameOver) return;
+
+      const guess = state.currentGuess.toUpperCase().replace(/[^A-Z]/g, "");
+      const expectedLength = state.currentPuzzle.length;
+      const validWords = getValidWords(expectedLength);
+
+      if (guess.length !== expectedLength) {
+        setStatus(`Please enter a ${expectedLength}-letter word.`);
+        return;
+      }
+
+      if (!validWords.has(guess)) {
+        setStatus("That guess is not in this Taxle dictionary yet.");
+        return;
+      }
+
+      if (state.hardMode && state.guesses.length > 0) {
+        const constraints = getRevealedConstraints();
+
+        for (const [position, letter] of Object.entries(constraints.lockedPositions)) {
+          if (guess[Number(position)] !== letter) {
+            setStatus(`Hard mode: keep ${letter} in position ${Number(position) + 1}.`);
+            return;
+          }
+        }
+
+        for (const letter of constraints.mustInclude) {
+          if (!guess.includes(letter)) {
+            setStatus(`Hard mode: include ${letter} in your next guess.`);
+            return;
+          }
+        }
+      }
+
+      const statuses = computeStatuses(guess, state.currentPuzzle.word);
+      state.guesses.push({ word: guess, statuses });
+      state.currentGuess = "";
+      els.guessInput.value = "";
+
+      const won = guess === state.currentPuzzle.word;
+      const exhausted = state.guesses.length >= CONFIG.maxGuesses && !won;
+
+      if (won) {
+        state.gameOver = true;
+        recordRound(true, state.guesses.length);
+        setStatus(`Correct. “${state.currentPuzzle.word}” solved in ${state.guesses.length} attempt${state.guesses.length === 1 ? "" : "s"}.`);
+        renderExplanation(true);
+      } else if (exhausted) {
+        state.gameOver = true;
+        recordRound(false, state.guesses.length);
+        setStatus(`The answer was “${state.currentPuzzle.word}”.`);
+        renderExplanation(true);
+      } else {
+        setStatus(`Attempt ${state.guesses.length}/${CONFIG.maxGuesses} submitted.`);
+      }
+
+      renderAll();
+      focusInput();
+    }
+
+    function handleKey(key) {
+      if (state.gameOver) return;
+
+      if (key === "ENTER") {
+        submitGuess();
+        return;
+      }
+
+      if (key === "BACK") {
+        state.currentGuess = state.currentGuess.slice(0, -1);
+        els.guessInput.value = state.currentGuess;
+        renderBoard();
+        focusInput();
+        return;
+      }
+
+      if (/^[A-Z]$/.test(key) && state.currentGuess.length < state.currentPuzzle.length) {
+        state.currentGuess += key;
+        els.guessInput.value = state.currentGuess;
+        renderBoard();
+        focusInput();
+      }
+    }
+
+    function focusInput() {
+      els.guessInput.focus({ preventScroll: true });
+    }
+
+    function closeIntro() {
+      els.introOverlay.classList.add("hidden");
+      localStorage.setItem(STORAGE_KEYS.introDismissed, "true");
+      focusInput();
+    }
+
+    function openIntro() {
+      els.introOverlay.classList.remove("hidden");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function initKeyboardShortcuts() {
+      window.addEventListener("keydown", (e) => {
+        const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+        const isTypingElsewhere = tag === "textarea";
+
+        if (isTypingElsewhere) return;
+
+        if (e.key === "Enter") {
+          e.preventDefault();
+          handleKey("ENTER");
+          return;
+        }
+
+        if (e.key === "Backspace") {
+          e.preventDefault();
+          handleKey("BACK");
+          return;
+        }
+
+        const key = e.key.toUpperCase();
+        if (/^[A-Z]$/.test(key)) {
+          handleKey(key);
+        }
+      });
+    }
+
+    function initControls() {
+      els.startBtn.addEventListener("click", closeIntro);
+      els.showIntroBtn.addEventListener("click", openIntro);
+
+      els.newPracticeBtn.addEventListener("click", () => {
+        state.mode = "practice";
+        state.seedCounter += 1;
+        resetRound();
+      });
+
+      els.dailyModeBtn.addEventListener("click", () => {
+        state.mode = "daily";
+        resetRound();
+      });
+
+      els.practiceModeBtn.addEventListener("click", () => {
+        state.mode = "practice";
+        state.seedCounter += 1;
+        resetRound();
+      });
+
+      els.hardModeBtn.addEventListener("click", () => {
+        state.hardMode = !state.hardMode;
+        renderMeta();
+        focusInput();
+      });
+
+      els.practiceLengthButtons().forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.practiceLength = Number(btn.dataset.length);
+          if (state.mode === "practice") {
+            state.seedCounter += 1;
+            resetRound();
+          } else {
+            renderMeta();
+          }
+        });
+      });
+
+      els.guessInput.addEventListener("input", (e) => {
+        const clean = e.target.value.toUpperCase().replace(/[^A-Z]/g, "").slice(0, state.currentPuzzle.length);
+        state.currentGuess = clean;
+        e.target.value = clean;
+        renderBoard();
+      });
+
+      els.submitGuessBtn.addEventListener("click", submitGuess);
+
+      els.playAgainBtn.addEventListener("click", () => {
+        if (state.mode === "daily") {
+          state.mode = "practice";
+        }
+        state.seedCounter += 1;
+        resetRound();
+      });
+
+      els.goDailyBtn.addEventListener("click", () => {
+        state.mode = "daily";
+        resetRound();
+      });
+    }
+
+    function bootstrap() {
+      if (localStorage.getItem(STORAGE_KEYS.introDismissed) === "true") {
+        els.introOverlay.classList.add("hidden");
+      }
+
+      initControls();
+      initKeyboardShortcuts();
+      resetRound();
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>
