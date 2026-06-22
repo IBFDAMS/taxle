@@ -1283,8 +1283,7 @@
       }
 
       if (!validWords.has(guess)) {
-        setStatus("That guess is not in this Taxle dictionary yet.");
-        return;
+  setStatus("Not in the Taxle dictionary — but accepted for play.");
       }
 
       if (state.hardMode && state.guesses.length > 0) {
