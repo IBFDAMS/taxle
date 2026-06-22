@@ -266,6 +266,7 @@
       display: grid;
       gap: 8px;
       width: min(100%, 520px);
+      perspective: 800px;
     }
 
     .board-row {
@@ -286,6 +287,7 @@
       font-size: 1.65rem;
       user-select: none;
       transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+      transform-style: preserve-3d;
     }
 
     .tile.pop {
@@ -314,7 +316,27 @@
       border-color: var(--tile-absent);
       color: white;
     }
+    .tile.flip {
+  animation: cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
 
+@keyframes flip {
+  0% {
+    transform: rotateX(0deg);
+    background: var(--tile-empty);
+    border-color: var(--tile-empty-border);
+  }
+  45% {
+    transform: rotateX(90deg);
+    background: var(--tile-empty);
+  }
+  55% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
     .keyboard {
       justify-content: centre;
       justify-content: center;
@@ -1159,13 +1181,25 @@
         rowEl.className = "board-row";
         rowEl.style.gridTemplateColumns = `repeat(${state.currentPuzzle.length}, minmax(0, 1fr))`;
 
-        row.forEach(tile => {
-          const tileEl = document.createElement("div");
-          tileEl.className = `tile ${tile.status !== "empty" ? tile.status : ""}`;
-          tileEl.textContent = tile.letter;
-          if (tile.letter) tileEl.classList.add("pop");
-          rowEl.appendChild(tileEl);
-        });
+        row.forEach((tile, colIndex) => {
+  const tileEl = document.createElement("div");
+  tileEl.className = "tile";
+  tileEl.textContent = tile.letter;
+
+  if (tile.status !== "empty") {
+    // Delay each tile flip
+    setTimeout(() => {
+      tileEl.classList.add("flip");
+
+      // Apply colour AFTER half flip
+      setTimeout(() => {
+        tileEl.classList.add(tile.status);
+      }, 300);
+    }, colIndex * 300);
+  }
+
+  rowEl.appendChild(tileEl);
+});
 
         els.board.appendChild(rowEl);
       });
