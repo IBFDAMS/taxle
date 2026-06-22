@@ -854,6 +854,9 @@
       maxGuesses: 6,
       logoFile: "IBFD_logo_lockup_tagline_centered_black_primary.png"
     };
+    
+    let lastSubmittedRowIndex = -1;
+
 
     const DATA = {
       5: [
@@ -1176,30 +1179,39 @@
       els.board.innerHTML = "";
       els.board.style.width = state.currentPuzzle.length === 7 ? "100%" : "min(100%, 500px)";
 
-      rows.forEach((row, idx) => {
+      rows.forEach((row, rowIndex) => {
         const rowEl = document.createElement("div");
         rowEl.className = "board-row";
         rowEl.style.gridTemplateColumns = `repeat(${state.currentPuzzle.length}, minmax(0, 1fr))`;
 
-        row.forEach((tile, colIndex) => {
+        
+row.forEach((tile, colIndex) => {
   const tileEl = document.createElement("div");
   tileEl.className = "tile";
   tileEl.textContent = tile.letter;
 
-  if (tile.status !== "empty") {
-    // Delay each tile flip
+  // ✅ Check if this is the row we JUST submitted
+  if (
+    rowIndex === lastSubmittedRowIndex &&
+    tile.status !== "empty"
+  ) {
     setTimeout(() => {
       tileEl.classList.add("flip");
 
-      // Apply colour AFTER half flip
       setTimeout(() => {
         tileEl.classList.add(tile.status);
       }, 300);
     }, colIndex * 300);
+  } else {
+    // ✅ All other tiles render instantly (no animation)
+    if (tile.status !== "empty") {
+      tileEl.classList.add(tile.status);
+    }
   }
 
   rowEl.appendChild(tileEl);
 });
+
 
         els.board.appendChild(rowEl);
       });
@@ -1340,6 +1352,7 @@
 
       const statuses = computeStatuses(guess, state.currentPuzzle.word);
       state.guesses.push({ word: guess, statuses });
+      lastSubmittedRowIndex = state.guesses.length - 1;
       state.currentGuess = "";
       els.guessInput.value = "";
 
