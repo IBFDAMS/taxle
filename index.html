@@ -1380,28 +1380,26 @@
 
     function initKeyboardShortcuts() {
       window.addEventListener("keydown", (e) => {
-        const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
-        const isTypingElsewhere = tag === "textarea";
+  const key = e.key.toUpperCase();
 
-        if (isTypingElsewhere) return;
+  if (key === "ENTER") {
+    e.preventDefault();
+    handleKey("ENTER");
+    return;
+  }
 
-        if (e.key === "Enter") {
-          e.preventDefault();
-          handleKey("ENTER");
-          return;
-        }
+  if (key === "BACKSPACE") {
+    e.preventDefault();
+    handleKey("BACK");
+    return;
+  }
 
-        if (e.key === "Backspace") {
-          e.preventDefault();
-          handleKey("BACK");
-          return;
-        }
-
-        const key = e.key.toUpperCase();
-        if (/^[A-Z]$/.test(key)) {
-          handleKey(key);
-        }
-      });
+  if (/^[A-Z]$/.test(key)) {
+    e.preventDefault();
+    handleKey(key);
+  }
+});
+``
     }
 
     function initControls() {
