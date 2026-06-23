@@ -1353,6 +1353,11 @@ row.forEach((tile, colIndex) => {
       const statuses = computeStatuses(guess, state.currentPuzzle.word);
       state.guesses.push({ word: guess, statuses });
       lastSubmittedRowIndex = state.guesses.length - 1;
+      
+setTimeout(() => {
+  lastSubmittedRowIndex = -1;
+}, 2000);
+
       state.currentGuess = "";
       els.guessInput.value = "";
 
